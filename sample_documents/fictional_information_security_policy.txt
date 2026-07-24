@@ -1,0 +1,16 @@
+FICTIONAL INFORMATION SECURITY POLICY
+FOR DEMONSTRATION ONLY
+
+Blue Orchard Studio is an imaginary organization.
+
+Access reviews
+System owners review privileged access every 90 days. Dormant accounts are disabled after 45 consecutive days without a successful sign-in.
+
+Incident reporting
+Team members report a suspected security incident to the fictional response desk within one hour of discovery. The response lead assigns an initial severity within four hours.
+
+Backups
+Critical project repositories are backed up daily. A restore exercise is completed every six months, and results are recorded in the local continuity register.
+
+This sample contains no real security procedures, contacts, or confidential information.
+

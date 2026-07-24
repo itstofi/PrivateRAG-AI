@@ -1,0 +1,12 @@
+name: General issue
+description: Documentation, setup, or other repository feedback.
+title: "[General]: "
+body:
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Do not include private documents, chat text, secrets, or machine-specific paths.
+    validations:
+      required: true
+

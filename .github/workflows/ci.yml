@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install dependencies
+        run: uv sync --extra dev --locked
+      - name: Formatting
+        run: uv run ruff format --check .
+      - name: Lint
+        run: uv run ruff check .
+      - name: Type check
+        run: uv run mypy app frontend scripts
+      - name: Tests with mocked Ollama
+        env:
+          APP_ENV: test
+          ANONYMIZED_TELEMETRY: "False"
+        run: uv run pytest -m "not ollama" --cov=app --cov-report=term-missing --cov-report=xml
+      - name: Offline RAG evaluation
+        run: uv run python -m scripts.evaluate_rag
+      - name: Dependency audit
+        run: uv run pip-audit --local --skip-editable --ignore-vuln PYSEC-2026-311
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
