@@ -13,6 +13,19 @@ I built this project to explore what a practical RAG system needs beyond a basic
 evidence, model changes, migrations, and a UI that still explains what is happening when a
 local service is unavailable.
 
+## Product tour
+
+![PrivateRAG AI local product tour](demo/private-rag-tour.gif)
+
+| Chat workspace | Document management |
+| --- | --- |
+| ![PrivateRAG chat workspace](screenshots/private-rag-workspaces.png) | ![PrivateRAG document management](screenshots/private-rag-documents.png) |
+
+![PrivateRAG local system health](screenshots/private-rag-system-health.png)
+
+The screenshots use the fictional sample documents included in this repository and a fully local
+Ollama runtime. No cloud model or external document service is involved.
+
 ## What it does
 
 - Organizes documents and conversations into isolated workspaces
