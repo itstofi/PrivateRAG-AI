@@ -13,7 +13,11 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from frontend.api_client import ApiClient, ApiError  # noqa: E402
 from frontend.components.citations import render_citations, render_conflicts  # noqa: E402
-from frontend.components.privacy import privacy_panel  # noqa: E402
+from frontend.components.privacy import (  # noqa: E402
+    format_storage_location,
+    privacy_panel,
+    sanitize_system_status,
+)
 from frontend.components.product import (  # noqa: E402
     empty_state,
     inject_product_styles,
@@ -529,19 +533,21 @@ def status_view(system_status: dict[str, Any] | None) -> None:
         chat_ready = ollama.get("chat_model_available", False)
         embedding_ready = ollama.get("embedding_model_available", False)
         first, second = st.columns(2)
-        first.success("Default chat model installed") if chat_ready else first.warning(
-            "Default chat model unavailable"
-        )
-        second.success("Embedding model installed") if embedding_ready else second.warning(
-            "Embedding model unavailable"
-        )
+        if chat_ready:
+            first.success("Default chat model installed")
+        else:
+            first.warning("Default chat model unavailable")
+        if embedding_ready:
+            second.success("Embedding model installed")
+        else:
+            second.warning("Embedding model unavailable")
         if not ollama.get("connected"):
             st.code("ollama serve", language="bash")
         elif not embedding_ready:
             st.code("ollama pull nomic-embed-text", language="bash")
     with st.expander("Technical status response"):
-        st.json(system_status)
-    st.caption(f"Local storage · {system_status['storage_location']}")
+        st.json(sanitize_system_status(system_status))
+    st.caption(format_storage_location(system_status["storage_location"]))
     privacy_panel()
 
 

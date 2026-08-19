@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import httpx
@@ -82,3 +83,36 @@ def test_new_chat_button_resets_history_without_mutating_widget_state(
     new_chat.click().run()
 
     assert not app.exception
+
+
+def test_system_health_does_not_render_streamlit_internal_objects(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_request(method: str, url: str, **_kwargs: Any) -> httpx.Response:
+        path = httpx.URL(url).path
+        if path == "/api/status":
+            return httpx.Response(
+                200,
+                json={
+                    "ollama": {
+                        "connected": True,
+                        "chat_model_available": True,
+                        "embedding_model_available": True,
+                    },
+                    "vector_store": {"active_chunk_count": 3},
+                    "document_count": 2,
+                    "storage_location": "/tmp/private-rag",
+                },
+            )
+        if path == "/api/models":
+            return httpx.Response(200, json={"models": ["llama3.2:latest"]})
+        if path == "/api/workspaces":
+            return httpx.Response(200, json=[])
+        raise AssertionError(f"Unexpected {method} request to {url}")
+
+    monkeypatch.setattr(httpx, "request", fake_request)
+    app = AppTest.from_file("frontend/streamlit_app.py", default_timeout=10).run()
+    app.radio[0].set_value("System health").run()
+
+    assert not app.get("doc_string")
+    assert "/tmp/private-rag" not in json.dumps(app.json[0].value)
